@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: fhir-consent-service
+
+fhir:
+  server:
+    # Base URL of the HAPI FHIR JPA server this service talks to.
+    # See docker-compose.yml for a local instance on :8081.
+    base-url: ${FHIR_SERVER_BASE_URL:http://localhost:8081/fhir}
+  client:
+    log-requests-and-responses: false
+    socket-timeout-ms: 30000
+    connect-timeout-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.example.fhirconsent: INFO
+    ca.uhn.fhir: WARN

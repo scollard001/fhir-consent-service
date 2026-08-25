@@ -1,0 +1,37 @@
+# Local development stack: a HAPI FHIR JPA server backed by Postgres.
+# Run `docker compose up -d` then `./gradlew bootRun` to point this service
+# at http://localhost:8081/fhir (the default in application.yml).
+version: "3.8"
+
+services:
+  fhir-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: hapi
+    volumes:
+      - fhir-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  fhir-server:
+    image: hapiproject/hapi:v7.2.0
+    depends_on:
+      - fhir-db
+    environment:
+      spring.datasource.url: jdbc:postgresql://fhir-db:5432/hapi
+      spring.datasource.username: hapi
+      spring.datasource.password: hapi
+      spring.datasource.driverClassName: org.postgresql.Driver
+      spring.jpa.properties.hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      hapi.fhir.fhir_version: R4
+      # Keep the demo server permissive; a production deployment would enable
+      # auth, audit logging, and a narrower CapabilityStatement.
+      hapi.fhir.allow_multiple_delete: "true"
+      hapi.fhir.reuse_cached_search_results_millis: "-1"
+    ports:
+      - "8081:8080"
+
+volumes:
+  fhir-db-data:

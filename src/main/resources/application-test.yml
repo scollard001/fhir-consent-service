@@ -1,0 +1,8 @@
+# Overridden at runtime by @DynamicPropertySource in integration tests once the
+# Testcontainers-managed HAPI FHIR JPA server has an assigned port.
+fhir:
+  server:
+    base-url: http://localhost:8081/fhir
+logging:
+  level:
+    com.example.fhirconsent: DEBUG
